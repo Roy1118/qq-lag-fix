@@ -1,0 +1,12 @@
+# 运行时产生的备份和报告
+*.bak
+*-backup/
+diagnose-*.txt
+
+# 评测工作区
+*-workspace/
+
+# 系统垃圾
+Thumbs.db
+desktop.ini
+.DS_Store

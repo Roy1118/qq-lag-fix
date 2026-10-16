@@ -1,0 +1,107 @@
+0. 环境
+========================================================================
+  Windows                      Microsoft Windows 11 家庭中文版 Build 26200
+  逻辑处理器                    32
+  物理内存(GB)                 31.6
+  已用内存(%)                  43.1
+
+========================================================================
+1. 资源瓶颈（判读：DPC<2% 中断<2% 磁盘<20% 队列≈0 才算干净）
+========================================================================
+  % dpc time                 0.21
+  % interrupt time           0.51
+  % disk time                0.677
+  current disk queue length  0
+  avg. disk sec/transfer     0
+  pages/sec                  138.926
+
+  --- QQ 各进程 CPU 占用（10 秒增量）---
+  PID 26668                  CPU%   0.13   内存MB    170   线程 152
+  PID 26876                  CPU%   0.11   内存MB    304   线程  83
+  PID 27440                  CPU%   0.00   内存MB    101   线程  37
+  PID 28436                  CPU%   0.02   内存MB    211   线程  42
+
+========================================================================
+2. QQ 安装与版本
+========================================================================
+  主程序                       C:\Program Files\Tencent\QQNT\QQ.exe
+  壳版本(旧)                   9.9.20.37625
+  versions\config.json:
+    {
+      "baseVersion": "9.9.20-37625",
+      "curVersion": "9.9.36-53644",
+      "prevVersion": "9.9.30-48517",
+      "onErrorVersions": [],
+      "buildId": "37625"
+    }
+  versions\ 下已安装的版本:
+    9.9.36-53644
+  QQ 进程数                    8
+
+========================================================================
+3. GPU 渲染路径（本技能的核心证据）
+========================================================================
+  Availability: 3=正在运行  8=Off Line(没在驱动任何显示)
+
+  名称                         OrayIddDriver Device
+  驱动版本                     17.50.19.949
+  Availability                 8
+  PNPDeviceID                  ROOT\DISPLAY\0000
+
+  名称                         NVIDIA GeForce RTX 4060 Laptop GPU
+  驱动版本                     32.0.15.9636
+  显示模式                     2560 x 1600 x 4294967296 种颜色
+  刷新率                       240
+  Availability                 3
+  PNPDeviceID                  PCI\VEN_10DE&DEV_28E0&SUBSYS_34B81043&REV_A1
+
+  名称                         Intel(R) UHD Graphics
+  驱动版本                     32.0.101.6790
+  Availability                 8
+  PNPDeviceID                  PCI\VEN_8086&DEV_A788&SUBSYS_34B81043&REV_04
+
+  --- 系统给 QQ 指定的 GPU 偏好 ---
+  含义: 0=让 Windows 决定  1=省电/核显  2=高性能/独显
+  QQ.exe GpuPreference         GpuPreference=1;
+  全局 DirectX 设置             SwapEffectUpgradeEnable=1;AutoHDREnable=1;
+
+  --- 虚拟显示驱动 ---
+  OrayIddDriver Device         Availability=8  ROOT\DISPLAY\0000
+
+========================================================================
+4. Chromium 渲染进程与已生效的开关
+========================================================================
+  PID 26668 [main]             (无相关开关)
+  PID 26876 [gpu-process]      (无相关开关)
+  PID 27440 [renderer]         (无相关开关)
+  PID 28436 [renderer]         (无相关开关)
+  PID 27004 [utility]          (无相关开关)
+
+  --- 启动入口 ---
+  Run\QQNT                     "C:\Program Files\Tencent\QQNT\QQ.exe" /background
+  快捷方式                       C:\ProgramData\Microsoft\Windows\Start Menu\Programs\腾讯软件\QQ\QQ.lnk
+    参数                        (空)
+  快捷方式                       C:\Users\user\Desktop\QQ.lnk
+    参数                        (空)
+
+========================================================================
+5. 输入法
+========================================================================
+  zh-Hans-CN                   0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}
+  ChsIME                       PID 5572  0MB
+  ctfmon                       PID 3776  21MB
+  TextInputHost                PID 15460  42MB
+
+========================================================================
+6. 系统级合成开销
+========================================================================
+  AutoHDR/全局                  SwapEffectUpgradeEnable=1;AutoHDREnable=1;
+  透明效果(1=开,建议关)          1
+  拖拽显示完整窗口                1
+  当前分辨率/刷新率               2560 x 1600 x 4294967296 种颜色 @ 240Hz
+
+========================================================================
+7. 可疑 shell 扩展
+========================================================================
+  WER 里没有 explorer 挂起记录（这是好事）
+  尚未使用 Blocked 机制

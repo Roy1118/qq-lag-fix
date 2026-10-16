@@ -1,0 +1,53 @@
+{
+  "skill_name": "qq-lag-fix",
+  "evals": [
+    {
+      "id": 0,
+      "name": "hybrid-gpu-typing-delay",
+      "prompt": "我的 QQ 打字特别难受，就是打完拼音选完字，那个字要等半秒才蹦到输入框里，一阵一阵的，几秒钟卡一下。我试过清缓存、重装 QQ 都没用。帮我看看是怎么回事。\n\n我提前跑了个诊断脚本，报告在 hybrid-gpu-cross-adapter.txt 里，你直接看那个。",
+      "expected_output": "指出根因是跨适配器渲染：显示器由 NVIDIA 独显驱动（Availability=3，2560x1600@240Hz），Intel 核显是 Off Line（Availability=8），而 QQ 的 GpuPreference=1 被钉在核显上。建议把 GpuPreference 改成 2。应当明确指出网上流传的“把 QQ 设成集成显卡”在这台机器上是反的。其次提到 Chromium 遮挡节流（QQ 进程没有任何反节流开关）作为第二条待改项。不应建议清缓存/重装 QQ。",
+      "files": ["evals/fixtures/hybrid-gpu-cross-adapter.txt"],
+      "assertions": [
+        "识别出显示器由 NVIDIA 独显驱动（Availability=3 或等效表述）",
+        "识别出 Intel 核显是 Off Line / Availability=8，即没在驱动显示",
+        "指出 QQ 的 GpuPreference=1（省电/核显）与显示器所在 GPU 不一致",
+        "建议把 GpuPreference 改为 2（高性能/独显）",
+        "提到 Chromium 遮挡节流 / CalculateNativeWinOcclusion 作为第二条待排查项",
+        "明确警告“把 QQ 设成集成显卡”这条常见建议在本机是反的",
+        "没有建议清理缓存、重装 QQ、或换网络",
+        "建议改完让用户重启 QQ 后当场验证"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "single-gpu-occlusion",
+      "prompt": "QQ 打字有延迟，候选字上屏慢半拍，感觉整个界面发涩。\n\n我先跑了个诊断脚本，输出在 single-gpu-occlusion.txt，麻烦你看一下到底哪里有问题。",
+      "expected_output": "这台机器只有一块 NVIDIA 独显（Availability=3），没有混合显卡，也没有虚拟显示驱动，所以跨适配器渲染不成立。QQ 的 GpuPreference 未设置（走默认）——不应该去瞎改它。资源指标干净。应把重点放在 Chromium 遮挡节流上（QQ 进程没有任何反节流开关），建议应用 --disable-features=CalculateNativeWinOcclusion 等开关，并说明要写进全部三个启动入口、以及后台继续渲染的代价。也可以提输入法（装了搜狗拼音）作为次要排查项。",
+      "files": ["evals/fixtures/single-gpu-occlusion.txt"],
+      "assertions": [
+        "确认这台机器没有混合显卡问题（只有一块独显在驱动显示）",
+        "没有把跨适配器渲染当成根因",
+        "没有建议去改 GpuPreference（因为它是未设置/默认状态）",
+        "把 Chromium 遮挡节流作为主要怀疑对象",
+        "提到具体的反节流开关名（CalculateNativeWinOcclusion 或 disable-backgrounding-occluded-windows 等）",
+        "说明开关要写进多个启动入口（Run 键和快捷方式），不能只写一处",
+        "说明了关掉节流的代价（后台继续渲染、耗电）",
+        "没有建议清理缓存、重装 QQ"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "dpc-storm-not-qq",
+      "prompt": "电脑最近特别卡，QQ 也卡，整个系统都卡，鼠标都一顿一顿的。我跑了诊断脚本，在 dpc-storm-driver.txt，你看是 QQ 的问题吗？",
+      "expected_output": "DPC 时间 14.38%、中断时间 6.12%——远超 2% 的干净阈值，说明根因在某个内核驱动，不在 QQ。应当明确指出这一点，并说明不该把 QQ 的渲染设置当成本问题的修复方向（改 GpuPreference 或加 Chromium 开关都解决不了系统级 DPC 风暴）。同时应指出这份报告里 QQ 的 GPU 配置本来就是正常的（GpuPreference=2、单显卡、无虚拟显示驱动），进一步说明问题不在 QQ。建议的下一步是定位高 DPC 的驱动（如 xperf/WPR、LatencyMon、逐个排查最近更新的驱动），而不是改 QQ。",
+      "files": ["evals/fixtures/dpc-storm-driver.txt"],
+      "assertions": [
+        "识别出 DPC 时间（14.38%）和中断时间（6.12%）远超正常阈值",
+        "明确下结论：根因是内核驱动，不是 QQ",
+        "没有把 QQ 的渲染设置（GPU 偏好 / Chromium 开关）当作本问题的修复手段",
+        "指出这份报告里 QQ 的配置本来就是正常的",
+        "给出定位高 DPC 驱动的下一步方向（而不是继续折腾 QQ）"
+      ]
+    }
+  ]
+}
